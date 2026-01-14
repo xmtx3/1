@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>专业九宫风水罗盘</title>
+    <title>专业九宫风水罗盘-精准校对版</title>
     <style>
         :root { 
-            --gold: #d4af37; --wood-bg: #1a0505; --red: #ff3b30; 
+            --gold: #d4af37; --red: #ff3b30; 
             --water-blue: #007aff; --wood-green: #34c759; --earth-yellow: #ff9500; --metal-white: #ffffff;
         }
         
@@ -15,95 +15,107 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        #info-box { text-align: center; width: 100%; z-index: 100; margin-bottom: 30px; }
-        #degree-val { font-size: 4.5rem; font-weight: 900; color: #fff; margin: 0; text-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
-        #gua-val { 
-            font-size: 1.1rem; 
-            font-weight: bold; 
-            color: var(--gold); 
-            background: rgba(211, 175, 55, 0.15); 
-            padding: 8px 20px; 
-            border-radius: 30px; 
-            display: inline-block; 
-            margin-top: 5px;
-            white-space: nowrap;
-        }
+        #info-box { text-align: center; width: 100%; z-index: 100; margin-bottom: 5px; }
+        #degree-val { font-size: 3rem; font-weight: 900; color: #fff; margin: 0; text-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+        #gua-val { font-size: 1rem; font-weight: bold; color: var(--gold); background: rgba(211, 175, 55, 0.15); padding: 5px 15px; border-radius: 30px; display: inline-block; }
 
-        .compass-container { position: relative; width: 92vw; height: 92vw; max-width: 460px; max-height: 460px; display: flex; align-items: center; justify-content: center; }
+        #controls { display: none; z-index: 150; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 12px; margin-bottom: 15px; width: 85%; max-width: 400px; border: 1px solid rgba(212,175,55,0.3); }
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin: 8px 0; }
+        .label-text { color: #fff; font-size: 13px; min-width: 60px; }
+        .btn-mini { background: var(--gold); color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        input[type="range"] { flex: 1; margin: 0 10px; accent-color: var(--gold); }
 
-        .line { position: absolute; background: var(--red); z-index: 50; opacity: 0.8; pointer-events: none; }
-        .h-line { width: 100%; height: 1.5px; } 
-        .v-line { width: 1.5px; height: 100%; } 
-
-        .top-arrow {
-            position: absolute;
-            top: -20px; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 15px solid var(--red);
-            z-index: 60;
-        }
-
-        #disk { width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(circle, #3d1010 0%, #0a0000 100%); border: 8px solid var(--gold); box-shadow: 0 0 50px rgba(0,0,0,1); position: relative; transition: transform 0.1s ease-out; overflow: hidden; }
-
-        .nine-grid { position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); border: 1px solid var(--gold); z-index: 10; background: rgba(0,0,0,0.4); }
-        .cell { border: 0.5px solid rgba(212,175,55,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2px; }
-        .cell b { font-size: 12px; margin-bottom: 2px; color: #fff; }
-        .cell small { font-size: 8px; line-height: 1.1; text-align: center; }
+        /* 外层容器 */
+        .compass-outer { position: relative; width: 90vw; height: 90vw; max-width: 500px; max-height: 500px; display: flex; align-items: center; justify-content: center; }
         
-        .fire { color: var(--red); }
-        .water { color: var(--water-blue); }
-        .wood { color: var(--wood-green); }
-        .metal { color: var(--metal-white); }
-        .earth { color: var(--earth-yellow); }
+        #house-img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 100%; max-height: 100%; object-fit: contain; z-index: 1; display: none; }
 
-        .d-layer { position: absolute; width: 100%; height: 100%; z-index: 6; }
-        .d-text { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 16px; font-weight: 900; padding-top: 10px; box-sizing: border-box; color: #fff; text-shadow: 0 0 5px var(--gold); }
+        /* 缩放层：确保圆心绝对居中 */
+        #compass-scaler { position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: 10; pointer-events: none; }
 
-        .m-layer { position: absolute; width: 100%; height: 100%; z-index: 5; }
-        .m-text { position: absolute; width: 100%; height: 100%; text-align: center; font-size: 12px; font-weight: bold; padding-top: 40px; box-sizing: border-box; color: var(--gold); }
+        /* 罗盘主体 */
+        #disk { 
+            position: absolute; width: 100%; height: 100%; border-radius: 50%; 
+            box-shadow: 0 0 0 4px var(--gold); /* 使用阴影代替边框，解决圆度不贴合问题 */
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.1s ease-out; 
+        }
 
-        #start-btn { padding: 20px 50px; font-size: 1.5rem; background: var(--gold); color: #000; border-radius: 50px; font-weight: bold; border: none; cursor: pointer; }
+        .line { position: absolute; background: var(--red); z-index: 50; opacity: 0.6; }
+        .h-line { width: 100%; height: 1px; left: 0; top: 50%; transform: translateY(-50%); } 
+        .v-line { width: 1px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); } 
+        .top-arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 12px solid var(--red); z-index: 60; }
 
-        .footer-sign { position: fixed; bottom: 20px; right: 20px; color: rgba(212, 175, 55, 0.6); font-size: 12px; letter-spacing: 1px; z-index: 200; }
+        /* 九宫格 */
+        .nine-grid { position: absolute; width: 50%; height: 50%; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); border: 1.5px solid var(--gold); z-index: 15; background: rgba(0,0,0,0.5); }
+        .cell { border: 0.5px solid rgba(212,175,55,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        .cell b { font-size: 11px; }
+        .cell small { font-size: 7px; transform: scale(0.85); }
+        
+        .fire { color: var(--red); } .water { color: var(--water-blue); } .wood { color: var(--wood-green); } .metal { color: var(--metal-white); } .earth { color: var(--earth-yellow); }
+
+        /* 文字层级分布 */
+        .d-layer, .m-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; }
+        .d-text, .m-text { position: absolute; width: 100%; height: 100%; top: 0; left: 0; text-align: center; box-sizing: border-box; }
+        .d-text { font-size: 15px; font-weight: bold; padding-top: 6px; color: #fff; text-shadow: 1px 1px 3px #000; }
+        .m-text { font-size: 10px; padding-top: 34px; color: var(--gold); }
+
+        #start-btn { padding: 15px 40px; font-size: 1.2rem; background: var(--gold); color: #000; border-radius: 50px; font-weight: bold; border: none; cursor: pointer; }
+        .footer-sign { position: fixed; bottom: 10px; right: 10px; color: rgba(212, 175, 55, 0.4); font-size: 10px; }
     </style>
 </head>
 <body>
 
-    <button id="start-btn">开启罗盘校准</button>
+    <button id="start-btn">开启专业罗盘</button>
 
     <div id="info-box" style="display:none;">
         <p id="degree-val">0°</p>
         <span id="gua-val">校准中...</span>
     </div>
 
-    <div class="compass-container" id="ui" style="display:none;">
-        <div class="top-arrow"></div>
-        <div class="line h-line"></div>
-        <div class="line v-line"></div>
+    <div id="controls">
+        <div class="control-row">
+            <button class="btn-mini" onclick="document.getElementById('upload-house').click()">上传户型图</button>
+            <input type="file" id="upload-house" accept="image/*" style="display:none;">
+        </div>
+        <div class="control-row">
+            <span class="label-text">罗盘大小</span>
+            <input type="range" id="size-slider" min="0.3" max="2.5" step="0.05" value="1.0">
+        </div>
+        <div class="control-row">
+            <span class="label-text">透明度</span>
+            <input type="range" id="opacity-slider" min="0" max="0.9" step="0.1" value="0.5">
+        </div>
+    </div>
+
+    <div class="compass-outer" id="ui" style="display:none;">
+        <img id="house-img" src="" alt="户型图">
         
-        <div id="disk">
-            <div id="dir-box" class="d-layer"></div>
-            <div id="mountains-box" class="m-layer"></div>
-            <div class="nine-grid">
-                <div class="cell"><b class="wood">巽四</b><small class="wood">木(长女)</small></div>
-                <div class="cell"><b class="fire">离九</b><small class="fire">火(中女)</small></div>
-                <div class="cell"><b class="earth">坤二</b><small class="earth">土(母亲)</small></div>
-                <div class="cell"><b class="wood">震三</b><small class="wood">木(长男)</small></div>
-                <div class="cell"><b class="earth">中宫</b><small class="earth">土</small></div>
-                <div class="cell"><b class="metal">兑七</b><small class="metal">金(少女)</small></div>
-                <div class="cell"><b class="earth">艮八</b><small class="earth">土(少男)</small></div>
-                <div class="cell"><b class="water">坎一</b><small class="water">水(中男)</small></div>
-                <div class="cell"><b class="metal">乾六</b><small class="metal">金(父亲)</small></div>
+        <div id="compass-scaler">
+            <div class="top-arrow"></div>
+            <div class="line h-line"></div>
+            <div class="line v-line"></div>
+            
+            <div id="disk">
+                <div id="dir-box" class="d-layer"></div>
+                <div id="mountains-box" class="m-layer"></div>
+                
+                <div class="nine-grid" id="nine-grid">
+                    <div class="cell"><b class="wood">巽四</b><small class="wood">木(长女)</small></div>
+                    <div class="cell"><b class="fire">离九</b><small class="fire">火(中女)</small></div>
+                    <div class="cell"><b class="earth">坤二</b><small class="earth">土(母亲)</small></div>
+                    <div class="cell"><b class="wood">震三</b><small class="wood">木(长男)</small></div>
+                    <div class="cell"><b class="earth">中宫</b><small class="earth">土</small></div>
+                    <div class="cell"><b class="metal">兑七</b><small class="metal">金(少女)</small></div>
+                    <div class="cell"><b class="earth">艮八</b><small class="earth">土(少男)</small></div>
+                    <div class="cell"><b class="water">坎一</b><small class="water">水(中男)</small></div>
+                    <div class="cell"><b class="metal">乾六</b><small class="metal">金(父亲)</small></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="footer-sign">dy：小茗同学</div>
+    <div class="footer-sign">dy：小茗同学 | 精准版</div>
 
     <script>
         const dirs = ["南", "西南", "西", "西北", "北", "东北", "东", "东南"];
@@ -128,6 +140,26 @@
         const degEl = document.getElementById('degree-val');
         const guaEl = document.getElementById('gua-val');
         const disk = document.getElementById('disk');
+        const scaler = document.getElementById('compass-scaler');
+        const houseImg = document.getElementById('house-img');
+        const grid = document.getElementById('nine-grid');
+
+        document.getElementById('upload-house').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (ev) => { houseImg.src = ev.target.result; houseImg.style.display = 'block'; };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('size-slider').oninput = (e) => {
+            scaler.style.transform = `scale(${e.target.value})`;
+        };
+
+        document.getElementById('opacity-slider').oninput = (e) => {
+            grid.style.backgroundColor = `rgba(0,0,0, ${e.target.value})`;
+        };
 
         btn.onclick = () => {
             if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -139,7 +171,6 @@
             let rotation = -h + 180; 
             disk.style.transform = `rotate(${rotation}deg)`;
             degEl.innerText = Math.round(h) + "°";
-
             const gs = [
                 {n:"坎一·水(正北)·中男", min:337.5, max:22.5},
                 {n:"艮八·土(东北)·少男", min:22.5, max:67.5},
@@ -150,14 +181,10 @@
                 {n:"兑七·金(正西)·少女", min:247.5, max:292.5},
                 {n:"乾六·金(西北)·父亲", min:292.5, max:337.5}
             ];
-            
             let res = "校准中...";
             for (let g of gs) {
-                if (g.min > g.max) {
-                    if (h >= g.min || h < g.max) { res = g.n; break; }
-                } else {
-                    if (h >= g.min && h < g.max) { res = g.n; break; }
-                }
+                if (g.min > g.max) { if (h >= g.min || h < g.max) { res = g.n; break; } }
+                else { if (h >= g.min && h < g.max) { res = g.n; break; } }
             }
             guaEl.innerText = res;
         }
@@ -166,19 +193,11 @@
             btn.style.display = 'none';
             document.getElementById('ui').style.display = 'flex';
             document.getElementById('info-box').style.display = 'block';
-
+            document.getElementById('controls').style.display = 'block';
             if ('ondeviceorientationabsolute' in window) {
-                window.addEventListener('deviceorientationabsolute', e => {
-                    let h = e.alpha ? 360 - e.alpha : 0; 
-                    updateUI(h);
-                }, true);
-            } else if ('ondeviceorientation' in window) {
-                window.addEventListener('deviceorientation', e => {
-                    let h = e.webkitCompassHeading || (e.alpha ? 360 - e.alpha : 0);
-                    updateUI(h);
-                }, true);
+                window.addEventListener('deviceorientationabsolute', e => updateUI(e.alpha ? 360 - e.alpha : 0), true);
             } else {
-                alert("您的浏览器不支持传感器，请使用HTTPS环境访问");
+                window.addEventListener('deviceorientation', e => updateUI(e.webkitCompassHeading || (e.alpha ? 360 - e.alpha : 0)), true);
             }
         }
     </script>
